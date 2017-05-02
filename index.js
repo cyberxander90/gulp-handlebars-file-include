@@ -11,20 +11,19 @@ var gulp = require('gulp');
 const PLUGIN_NAME = 'gulp-handlebars-file-include';
 
 // gulp-handlebars-file-include plugin
-module.exports = gulpHandlebarsFileInclude;
-
-function gulpHandlebarsFileInclude(defaultContext, options) {
+module.exports = function (defaultContext, options) {
 
     // set default options
     options = options || {};
     defaultContext = defaultContext || {};
     options.handlebarsHelpers = options.handlebarsHelpers || [];  // [{name: string, fn: handlebar_helper_function}]
+    options.extensions = options.extensions || ['.html', '.hbs', '.hb', '.handlebars'];
 
     // register helpers
     options.handlebarsHelpers.forEach(function(item){
         handlebars.registerHelper(item.name, item.fn);
     });
-    handlebars.registerHelper('fileInclude', fileInclude(null,[], defaultContext));
+    handlebars.registerHelper('fileInclude', fileInclude(options.rootPath || null, options.extensions, defaultContext));
 
     // creating a stream through which each file will pass
     return through.obj(function(file, enc, cb) {
@@ -66,6 +65,10 @@ function fileInclude(rootPath, extensions, globalContext){
         // resolve file path
         var filePath = resolvePath(file, rootPath, extensions);
 
+        if(!filePath){
+            throw new PluginError(PLUGIN_NAME, "File not found: '" + file + "'");
+        }
+
         // compile file and return result
         var fileContent = fs.readFileSync(filePath);
         return handlebars.compile(fileContent.toString())(context);
@@ -77,7 +80,7 @@ function resolvePath(file, rootPath, extensions){
 
     var filePath = resolvePathExtensions(path.resolve(__dirname, rootPath || '', file), extensions);
     if(!filePath && rootPath){
-        filePath = resolvePathAux(path.resolve(__dirname, file), extensions);
+        filePath = resolvePathExtensions(path.resolve(__dirname, file), extensions);
     }
     return filePath;
 }
