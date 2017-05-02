@@ -18,18 +18,13 @@ function gulpHandlebarsFileInclude(defaultContext, options) {
     // set default options
     options = options || {};
     defaultContext = defaultContext || {};
-    options.handlebarsHelpers = options.handlebarsHelpers || [];
-
-    // add fileInclude helper
-    options.handlebarsHelpers.push({
-        name: 'fileInclude',
-        fn: fileInclude
-    });
+    options.handlebarsHelpers = options.handlebarsHelpers || [];  // [{name: string, fn: handlebar_helper_function}]
 
     // register helpers
     options.handlebarsHelpers.forEach(function(item){
-        handlebars.registerHelper(item.name, item.fn(null,[], defaultContext));
+        handlebars.registerHelper(item.name, item.fn);
     });
+    handlebars.registerHelper('fileInclude', fileInclude(null,[], defaultContext));
 
     // creating a stream through which each file will pass
     return through.obj(function(file, enc, cb) {
