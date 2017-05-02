@@ -5,36 +5,30 @@ var PluginError = gutil.PluginError;
 var handlebars = require('handlebars');
 var path = require('path');
 var fs = require('fs');
+var gulp = require('gulp');
 
 // const
 const PLUGIN_NAME = 'gulp-handlebars-file-include';
 
 // gulp-handlebars-file-include plugin
-module.exports = function gulpHandlebarsFileInclude(defaultContext, options) {
+module.exports = gulpHandlebarsFileInclude;
+
+function gulpHandlebarsFileInclude(defaultContext, options) {
 
     // set default options
     options = options || {};
     defaultContext = defaultContext || {};
-    options.handlebarsHepler = options.handlebarsHepler || [];
-    // [{name: <string>, fn: <function(file, context, options) => string>}]
+    options.handlebarsHelpers = options.handlebarsHelpers || [];
 
-    // create fileInclude helper
-    options.handlebarsHepler.push({
+    // add fileInclude helper
+    options.handlebarsHelpers.push({
         name: 'fileInclude',
-        fn: function(file, context, options) {
-
-            // resolve file path
-            var filePath = path.resolve(__dirname, file);
-
-            // compile file and return result
-            var fileContent = fs.readFileSync(filePath);
-            return handlebars.compile(fileContent)(context);
-        }
+        fn: fileInclude
     });
 
     // register helpers
-    options.handlebarsHepler.forEach(function(item){
-        handlebars.registerHelper(item.name, item.fn);
+    options.handlebarsHelpers.forEach(function(item){
+        handlebars.registerHelper(item.name, item.fn(null,[], defaultContext));
     });
 
     // creating a stream through which each file will pass
@@ -59,4 +53,53 @@ module.exports = function gulpHandlebarsFileInclude(defaultContext, options) {
 
         cb(null, file);
     });
-};
+}
+
+
+
+// get a handlebar helper method, used to include the content of external files
+// it receive the file path string to include and a context object used to compile the file with handlebar
+function fileInclude(rootPath, extensions, globalContext){
+
+    // return handlebar helper method
+    return function(file, options) {
+
+        var context = {};
+        extendObject(context, globalContext);
+        extendObject(context, options.hash);
+
+        // resolve file path
+        var filePath = resolvePath(file, rootPath, extensions);
+
+        // compile file and return result
+        var fileContent = fs.readFileSync(filePath);
+        return handlebars.compile(fileContent.toString())(context);
+    }
+}
+
+// get the absolute filePath of file. this search a valid file from rootPath including extensions
+function resolvePath(file, rootPath, extensions){
+
+    var filePath = resolvePathExtensions(path.resolve(__dirname, rootPath || '', file), extensions);
+    if(!filePath && rootPath){
+        filePath = resolvePathAux(path.resolve(__dirname, file), extensions);
+    }
+    return filePath;
+}
+
+// get an existed file resolved with a provided extensions
+function resolvePathExtensions(file, extensions){
+    extensions = [''].concat(extensions);
+    for(var i = 0; i < extensions.length; i++){
+        var result = file + extensions[i];
+        if(fs.existsSync(result)){
+            return result;
+        }
+    }
+}
+
+function extendObject(obj1, obj2){
+    for(var id in obj2){
+        obj1[id] = obj2[id];
+    }
+}
