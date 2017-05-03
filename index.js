@@ -18,12 +18,15 @@ module.exports = function (defaultContext, options) {
     defaultContext = defaultContext || {};
     options.handlebarsHelpers = options.handlebarsHelpers || [];  // [{name: string, fn: handlebar_helper_function}]
     options.extensions = options.extensions || ['.html', '.hbs', '.hb', '.handlebars'];
+    options.maxRecursion = options.maxRecursion || 10;
 
     // register helpers
     options.handlebarsHelpers.forEach(function(item){
         handlebars.registerHelper(item.name, item.fn);
     });
-    handlebars.registerHelper('fileInclude', fileInclude(options.rootPath || null, options.extensions, defaultContext));
+    handlebars.registerHelper(
+        'fileInclude',
+        fileInclude(options.rootPath || null, options.extensions, defaultContext, options.maxRecursion));
 
     // creating a stream through which each file will pass
     return through.obj(function(file, enc, cb) {
@@ -53,7 +56,10 @@ module.exports = function (defaultContext, options) {
 
 // get a handlebar helper method, used to include the content of external files
 // it receive the file path string to include and a context object used to compile the file with handlebar
-function fileInclude(rootPath, extensions, globalContext){
+function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
+
+    // to control file include recursion
+    var recursion = {};
 
     // return handlebar helper method
     return function(file, options) {
@@ -64,9 +70,14 @@ function fileInclude(rootPath, extensions, globalContext){
 
         // resolve file path
         var filePath = resolvePath(file, rootPath, extensions);
-
         if(!filePath){
             throw new PluginError(PLUGIN_NAME, "File not found: '" + file + "'");
+        }
+
+        // check file recursion
+        recursion[filePath] = (recursion[filePath] || 0) + 1;
+        if(recursion[filePath] > MAX_RECURSION){
+            throw new PluginError(PLUGIN_NAME, "Max recursion on file '" + filePath + "'");
         }
 
         // compile file and return result
