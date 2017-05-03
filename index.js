@@ -44,13 +44,15 @@ module.exports = function (defaultContext, options) {
 
         // buffer file
         if (file.isBuffer()) {
-            file.contents = new Buffer(handlebars.compile(file.contents.toString())(defaultContext));
+            var compiled = compile(file.contents.toString(), defaultContext, file.path);
+            file.contents = new Buffer(compiled);
         }
 
         // stream file
         if (file.isStream()) {
             var stream = through();
-            stream.write(handlebars.compile(file.contents.toString())(defaultContext));
+            var compiled = compile(file.contents.toString(), defaultContext, file.path);
+            stream.write(compiled);
             file.contents = stream;
         }
 
@@ -100,7 +102,7 @@ function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
         var fileContent = cacheFileContent[filePath];
 
         // compile file and return result
-        var compiled = handlebars.compile(fileContent)(context);
+        var compiled = compile(fileContent, context, filePath);
         return new handlebars.SafeString(compiled);
     }
 }
@@ -130,4 +132,16 @@ function extendObject(obj1, obj2){
     for(var id in obj2){
         obj1[id] = obj2[id];
     }
+}
+
+function compile(fileContent, context, filePath){
+    var result = null
+    try{
+        result = handlebars.compile(fileContent)(context);
+    }
+    catch (exception){
+        console.log(exception)
+        throw new PluginError(PLUGIN_NAME, 'Failed to compile file: "'+ filePath +'"');
+    }
+    return result;
 }
