@@ -1,15 +1,18 @@
 # gulp-handlebars-file-include
 
-Gulp plugin for create html templates in a simpler way.<br/>
+**Gulp plugin for create html templates in a simpler way.<br/>**
 A very common problem when developers create html templates for a site, is the amount of repeated html code. <br/>
 This module resolve that problem allowing you define a sections of code in separated files, for later invoke it. Much better still, this allow you build semantic templates with [handlebars](http://handlebarsjs.com/).
 
+---
 
 ## Installation
 
 ```sh
 $ npm install gulp-handlebars-file-include
 ```
+
+---
 
 ## Basic Usage
 
@@ -123,7 +126,7 @@ _src/button.html_
 
 Note that this helper receive a `string` expression to evaluate, and you access to context parameters with `this` keyword. 
 
-
+---
 
 ## Handlebars Helpers
 * **fileInclude**
@@ -134,6 +137,7 @@ You can pass parameters used to compile the external file in the way **arg1=valu
 This helper receive an expression as `string`, this expression is evaluated and return its result.<br/>
 You can access to context properties in the expression, using the **this** keyword
 
+---
 
 ## API
 gulpHandlebarsFileInclude(**globalContext**, **options**)
