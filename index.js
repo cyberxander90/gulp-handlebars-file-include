@@ -120,9 +120,9 @@ function evalHelper(expression, myThis, options) {
 // get the absolute filePath of file. this search a valid file from rootPath including extensions
 function resolvePath(file, rootPath, extensions){
 
-    var filePath = resolvePathExtensions(path.resolve(__dirname, rootPath || '', file), extensions);
+    var filePath = resolvePathExtensions(path.resolve(rootPath || '', file), extensions);
     if(!filePath && rootPath){
-        filePath = resolvePathExtensions(path.resolve(__dirname, file), extensions);
+        filePath = resolvePathExtensions(path.resolve(file), extensions);
     }
     return filePath;
 }
