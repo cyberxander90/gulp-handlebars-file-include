@@ -28,6 +28,10 @@ module.exports = function (defaultContext, options) {
     handlebars.registerHelper(
         'fileInclude',
         fileInclude(options.rootPath || null, options.extensions, defaultContext, options.maxRecursion));
+    handlebars.registerHelper(
+        'eval',
+        evalHelper
+    );
 
     // creating a stream through which each file will pass
     return through.obj(function(file, enc, cb) {
@@ -105,6 +109,12 @@ function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
         var compiled = compile(fileContent, context, filePath);
         return new handlebars.SafeString(compiled);
     }
+}
+
+function evalHelper(expression, myThis, options) {
+    var context = myThis.data.root;
+    var result = Function('return ' + expression).call(context);
+    return result;
 }
 
 // get the absolute filePath of file. this search a valid file from rootPath including extensions
