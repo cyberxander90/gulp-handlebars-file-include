@@ -1,8 +1,7 @@
 # gulp-handlebars-file-include
 
-Gulp plugin for create html templates in a simpler way.
-
-A very common problem when developers create html templates for a site, is the amount of repeated html code. 
+Gulp plugin for create html templates in a simpler way.<br/>
+A very common problem when developers create html templates for a site, is the amount of repeated html code. <br/>
 This module resolve that problem allowing you define a sections of code in separated files, for later invoke it. Much better still, this allow you build semantic templates with [handlebars](http://handlebarsjs.com/).
 
 
@@ -128,15 +127,11 @@ Note that this helper receive a `string` expression to evaluate, and you access 
 
 ## Handlebars Helpers
 * **fileInclude**
-
-This helper receive the path as `string`, of an external file used to compile with handlebars and included the compiled result.
-
+This helper receive the path as `string`, of an external file used to compile with handlebars and included the compiled result.<br/>
 You can pass parameters used to compile the external file in the way **arg1=value1 arg2=value2 ...**
 
 * **eval**
-
-This helper receive an expression as `string`, this expression is evaluated and return its result.
-
+This helper receive an expression as `string`, this expression is evaluated and return its result.<br/>
 You can access to context properties in the expression, using the **this** keyword
 
 
@@ -144,44 +139,31 @@ You can access to context properties in the expression, using the **this** keywo
 gulpHandlebarsFileInclude(**globalContext**, **options**)
 
 * **globalContext**
-
-`object` used as a default context for all templates.
-
+`object` used as a default context for all templates.<br/>
 This can be useful if you want to set, for example, the same footer message for all indexes page.
 
 
 * **options**
 `object` with the following properties
 
-    - **rootPath**
-`string`, or `string[]` used to set where the compiler search for files to include.
-
-This is useful to take you away to define the whole path of the file to include.
-
+    - **rootPath**<br/>
+`string`, or `string[]` used to set where the compiler search for files to include.<br/>
+This is useful to take you away to define the whole path of the file to include.<br/>
 If the compiler can't find a file in the rootPath, then is search as normal absolute file path.
 
-
-    - **extensions**
-`string[]` to set the valid file extensions in which the compiler search the files. 
-
-This allow to declare a file to include without extensions.
-
+    - **extensions**<br/>
+`string[]` to set the valid file extensions in which the compiler search the files.<br/>
+This allow to declare a file to include without extensions.<br/>
 Default is `['.html', '.hbs', '.hb', '.handlebars']`.
 
-
-    - **maxRecursion**
-`int` used to restrict the maximum amount of times in which a file can include it-self. 
-
-This is used to stop infinite recursion of the included file.
-
+    - **maxRecursion**<br/>
+`int` used to restrict the maximum amount of times in which a file can include it-self.<br/>
+This is used to stop infinite recursion of the included file.<br/>
 Default value is 10.
 
-
-    - **ignoreFiles**
-`function(string) => boolean` that receive a filePath of the current file to compile and return boolean to indicate if you want generate the file in dist.
-
-That is useful to avoid generate files of _partial_ templates.
-
+    - **ignoreFiles**<br/>
+`function(string) => boolean` that receive a filePath of the current file to compile and return boolean to indicate if you want generate the file in dist.<br/>
+That is useful to avoid generate files of _partial_ templates.<br/>
 For example, maybe all your _partial_ files are in _src/partials_, then you can check the path of file to generete and ignore from _src/partials_ with 
     ```javascript
         function(filePath){
@@ -190,9 +172,7 @@ For example, maybe all your _partial_ files are in _src/partials_, then you can 
         }
     ```
 
-    - **handlebarsHelpers**
-`{name: <string>, fn: function}[]`
-
-Array of Objects with the properties _name_ of `string` and _fn_ of `function`.
-
+    - **handlebarsHelpers**<br/>
+`{name: <string>, fn: function}[]`<br/>
+Array of Objects with the properties _name_ of `string` and _fn_ of `function`.<br/>
 This is used to include custom helpers to the handlebars compiler.
