@@ -47,7 +47,7 @@ module.exports = function (defaultContext, options) {
 
         cb(null, file);
     });
-}
+};
 
 
 
