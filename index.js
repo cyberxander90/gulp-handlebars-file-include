@@ -19,6 +19,7 @@ module.exports = function (defaultContext, options) {
     options.handlebarsHelpers = options.handlebarsHelpers || [];  // [{name: string, fn: handlebar_helper_function}]
     options.extensions = options.extensions || ['.html', '.hbs', '.hb', '.handlebars'];
     options.maxRecursion = options.maxRecursion || 10;
+    // options.ignoreFiles; // function(filePath) => bool
 
     // register helpers
     options.handlebarsHelpers.forEach(function(item){
@@ -30,6 +31,11 @@ module.exports = function (defaultContext, options) {
 
     // creating a stream through which each file will pass
     return through.obj(function(file, enc, cb) {
+
+        // ignore file
+        if(options.ignoreFiles && options.ignoreFiles(file.path)){
+            return cb(null, null);
+        }
 
         // empty file
         if (file.isNull()) {
@@ -61,6 +67,9 @@ function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
     // to control file include recursion
     var recursion = {};
 
+    // cache file content
+    var cacheFileContent = {};
+
     // return handlebar helper method
     return function(file, options) {
 
@@ -80,9 +89,18 @@ function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
             throw new PluginError(PLUGIN_NAME, "Max recursion on file '" + filePath + "'");
         }
 
+        // get file content from cache, if it is not in cache then get content from file and update cache
+        if(!cacheFileContent[filePath]){
+            cacheFileContent[filePath] = fs.readFileSync(filePath).toString();
+            //console.log('READ CONTENT FROM FILE: ', filePath);
+        }
+        //else{
+        //    console.log('READ CONTENT FROM CACHE: ', filePath);
+        //}
+        var fileContent = cacheFileContent[filePath];
+
         // compile file and return result
-        var fileContent = fs.readFileSync(filePath);
-        return handlebars.compile(fileContent.toString())(context);
+        return handlebars.compile(fileContent)(context);
     }
 }
 
