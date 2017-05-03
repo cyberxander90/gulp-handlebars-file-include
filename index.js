@@ -100,7 +100,8 @@ function fileInclude(rootPath, extensions, globalContext, MAX_RECURSION){
         var fileContent = cacheFileContent[filePath];
 
         // compile file and return result
-        return handlebars.compile(fileContent)(context);
+        var compiled = handlebars.compile(fileContent)(context);
+        return new handlebars.SafeString(compiled);
     }
 }
 
