@@ -1,11 +1,25 @@
 {
   "name": "gulp-handlebars-file-include",
   "version": "1.0.0",
-  "description": "",
+  "description": "Gulp Plugin used to include external files into html.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "gulpplugin",
+    "handlebars",
+    "file",
+    "include",
+    "html",
+    "handlebars-file-include"
+  ],
+  "bugs": {
+    "url": "https://github.com/cyberxander90/gulp-handlebars-file-include/issues"
+  },
+  "homepage": "https://github.com/cyberxander90/gulp-handlebars-file-include",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyberxander90/gulp-handlebars-file-include.git"
+  }
 }
